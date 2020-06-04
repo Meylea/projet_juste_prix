@@ -39,7 +39,7 @@ def init_game():
         if session['first_guess']:
             session['first_guess'] = False
             session['start'] = timer()
-            session['answers'] = {}
+            session['answers'] = []
         answer = request.form['answer']
         answer = answer.replace(',', '.')
         try:
@@ -60,12 +60,11 @@ def init_game():
         if answer < session['product']['price']:
             message = 'Plus haut !'
         session['answers'].append("answer")
-        print(answers)
         return render_template(
             'index.html',
             product=session['product'],
             message=message,
-            answers=answers
+            answers=session['answers']
         )
 
 
