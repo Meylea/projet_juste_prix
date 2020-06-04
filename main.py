@@ -1,4 +1,6 @@
 # -- coding: utf-8 --
+import re
+
 import requests
 import json
 import random
@@ -7,19 +9,25 @@ from timeit import default_timer as timer
 
 app = Flask(__name__)
 app.secret_key = '\xec\xdf\xa1\x19\xf7\x82\xb3\x81\x1b\xbeb\n"\x99\xc6.'
+answers = []
 
 
 @app.route('/', methods=['GET', 'POST'])
 def init_game():
+    global answers
     if request.method == 'GET':
         url = 'https://api.cdiscount.com/OpenApi/json/Search'
         payload = {
             "ApiKey": "ce1e0c0e-1591-41b4-bf55-ffb0b1264900",
             "SearchRequest": {
-                "Keyword": "tablette",
+                "Keyword": "electronique",
                 "SortBy": "",
                 "Pagination": {"ItemsPerPage": 10, "PageNumber": random.randrange(0, 9)},
-                "Filters": {"Price": {"Min": 0, "Max": 0}, "Navigation": "", "IncludeMarketPlace": False, "Condition": None}
+                "Filters": {
+                    "Price": {"Min": 0, "Max": 0},
+                    "Navigation": "",
+                    "IncludeMarketPlace": False,
+                    "Condition": None}
             }
         }
         r = requests.post(url, data=json.dumps(payload))
@@ -38,33 +46,37 @@ def init_game():
     else:
         if session['first_guess']:
             session['first_guess'] = False
+            session['game_ended'] = False
             session['start'] = timer()
-            session['answers'] = []
+            answers = []
         answer = request.form['answer']
         answer = answer.replace(',', '.')
         try:
+            assert re.match('^[0-9]+[.]?[0-9]{,2}$', answer)
             answer = float(answer)
-        except ValueError:
+        except (AssertionError, ValueError):
             return render_template(
                 'index.html',
-                error="Veuillez entrer une valeur numérique avec maximum deux chiffres derrière la virgule !",
+                error="Veuillez entrer une valeur numérique postitive avec maximum deux chiffres derrière la virgule !",
                 product=session['product']
             )
         message = None
+        stop = timer()
+        time = round(stop - session['start'], 4)
         if answer == session['product']['price']:
-            stop = timer()
-            time = stop - session['start']
             message = f'Vous avez gagné en {time} secondes !'
+            session['game_ended'] = True
         if answer > session['product']['price']:
             message = 'Plus bas !'
         if answer < session['product']['price']:
             message = 'Plus haut !'
-        session['answers'].append("answer")
+        answers.insert(0, {'price': round(answer, 2), 'time': time})
         return render_template(
             'index.html',
             product=session['product'],
             message=message,
-            answers=session['answers']
+            answers=answers,
+            game_ended=session['game_ended']
         )
 
 

@@ -5,5 +5,26 @@
 
 body
 {
-    text_align: center;
+    background-color: #C5E9F2;
+    font-family: 'Roboto', sans-serif;
+}
+
+header
+{
+    background-color: #7FDAF1;
+}
+
+h1
+{
+    font-family: 'Lobster', cursive;
+}
+
+.card
+{
+    width: 300px;
+}
+
+table
+{
+    background-color: white;
 }
