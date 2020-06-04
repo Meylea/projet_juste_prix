@@ -58,7 +58,8 @@ def init_game():
             return render_template(
                 'index.html',
                 error="Veuillez entrer une valeur numérique postitive avec maximum deux chiffres derrière la virgule !",
-                product=session['product']
+                product=session['product'],
+                answers=answers
             )
         message = None
         stop = timer()

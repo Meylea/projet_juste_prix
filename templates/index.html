@@ -24,7 +24,7 @@
             {% if game_ended %}<a href="/" class="btn btn-primary">Rejouer</a>{% endif %}
     </form>
     {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
-    <div id="result">{{ message }}</div>
+    {% if message %}<div id="result" class="alert alert-info"><p>{{ message }}</p></div>{% endif %}
 
     {% if answers %}
     <div>
