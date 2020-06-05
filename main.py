@@ -4,7 +4,7 @@ import re
 import requests
 import json
 import random
-from flask import Flask, render_template, request, session, url_for
+from flask import Flask, render_template, request, session
 from timeit import default_timer as timer
 
 app = Flask(__name__)
@@ -63,7 +63,7 @@ def init_game():
             )
         message = None
         stop = timer()
-        time = round(stop - session['start'], 4)
+        time = round(stop - session['start'], 3)
         if answer == session['product']['price']:
             message = f'Vous avez gagné en {time} secondes !'
             session['game_ended'] = True
